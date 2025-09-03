@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "github-changelog": {
+      "command": "node",
+      "args": ["dist/index.js"],
+      "cwd": "${workspaceFolder}"
+    }
+  }
+}

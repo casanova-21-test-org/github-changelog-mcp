@@ -1,0 +1,10 @@
+{
+  "mcp.servers": {
+    "github-changelog": {
+      "command": "node",
+      "args": ["dist/index.js"],
+      "cwd": "${workspaceFolder}",
+      "description": "GitHub Changelog MCP Server - Scrapes and provides access to GitHub changelog entries"
+    }
+  }
+}

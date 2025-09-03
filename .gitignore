@@ -25,8 +25,7 @@ coverage/
 logs
 *.log
 
-# IDE files
-.vscode/
+# IDE files (keep .vscode/ for MCP configuration)
 .idea/
 *.swp
 *.swo
