@@ -1,0 +1,9 @@
+{
+  "servers": {
+    "github-changelog": {
+      "command": "node",
+      "args": ["dist/index.js"],
+      "cwd": "/Users/casanova-21/repos/github-changelog-mcp"
+    }
+  }
+}
