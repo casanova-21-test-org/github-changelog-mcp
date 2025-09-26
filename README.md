@@ -45,6 +45,34 @@ The server runs on stdio transport and communicates via the Model Context Protoc
 npm run dev  # Watch mode for development
 ```
 
+### Container (Docker) Usage
+
+You can build and run the server in a minimal container (multi‑stage build included).
+
+Build the image locally:
+
+```bash
+docker build -t ghcr.io/<owner>/github-changelog-mcp:dev .
+```
+
+Run the container (will start and wait for MCP stdio messages):
+
+```bash
+docker run -it --rm ghcr.io/<owner>/github-changelog-mcp:dev
+```
+
+Publish to GitHub Container Registry (GHCR):
+
+```bash
+docker tag ghcr.io/<owner>/github-changelog-mcp:dev ghcr.io/<owner>/github-changelog-mcp:1.0.0
+docker push ghcr.io/<owner>/github-changelog-mcp:1.0.0
+docker push ghcr.io/<owner>/github-changelog-mcp:dev
+```
+
+In GitHub Actions, the provided workflow `.github/workflows/container.yml` builds, tests, and (on non‑PR events) pushes tags: branch, tag, commit SHA, and `latest` (default branch only).
+
+> Note: Since the server uses stdio transport, it does not expose an HTTP port by default. If you need health checks, add an optional HTTP endpoint (see comments in the Dockerfile instructions section of project issues / future enhancements).
+
 ## Available Tools
 
 ### 1. `get_changelog_entries`

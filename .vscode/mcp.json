@@ -4,6 +4,11 @@
       "command": "node",
       "args": ["dist/index.js"],
       "cwd": "${workspaceFolder}"
+    },
+    "github-changelog-docker": {
+      "command": "${workspaceFolder}/scripts/run-docker-mcp.sh",
+      "args": [],
+      "cwd": "${workspaceFolder}"
     }
   }
 }
