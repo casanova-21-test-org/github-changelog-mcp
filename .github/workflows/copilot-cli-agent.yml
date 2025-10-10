@@ -1,0 +1,77 @@
+name: Copilot CLI Agent Hello World
+
+on:
+  workflow_dispatch:
+    inputs:
+      prompt:
+        description: 'Custom prompt to send to Copilot CLI agent'
+        required: false
+        default: 'Hello world! Please analyze this GitHub Changelog MCP Server project and provide a brief summary of its purpose and architecture.'
+        type: string
+
+jobs:
+  copilot-cli-hello:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build project
+        run: npm run build
+
+      - name: Install GitHub Copilot CLI
+        run: |
+          npm install -g @github/copilot
+
+      - name: Authenticate Copilot CLI
+        run: |
+          # Set GitHub token for authentication
+          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          echo "GITHUB_TOKEN set for Copilot CLI authentication"
+
+      - name: Execute Copilot CLI Agent Hello World
+        run: |
+          echo "🤖 Starting Copilot CLI Agent..."
+          echo "📝 Prompt: ${{ github.event.inputs.prompt }}"
+          echo ""
+          
+          # Execute the Copilot CLI in programmatic mode with the provided prompt
+          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          copilot -p "${{ github.event.inputs.prompt }}" --allow-all-tools
+          
+          echo ""
+          echo "✅ Copilot CLI Agent execution completed!"
+
+      - name: Test MCP Server Integration
+        run: |
+          echo "🧪 Testing MCP Server as context for Copilot..."
+          
+          # Run a quick test to ensure the MCP server is working
+          npm run test
+          
+          # Ask Copilot to explain the test results using programmatic mode
+          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          copilot -p "Explain what the npm run test output means for this TypeScript MCP server project and whether the tests passed successfully" --allow-all-tools
+
+      - name: Generate Project Summary
+        run: |
+          echo "📊 Generating project summary with Copilot CLI..."
+          
+          # Use Copilot to analyze the project structure
+          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          copilot -p "Analyze the files in this GitHub Changelog MCP Server project and explain what each main component does. Focus on the src/ directory and key configuration files." --allow-all-tools
+          
+          echo ""
+          echo "🎉 Workflow completed successfully!"

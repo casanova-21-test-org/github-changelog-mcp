@@ -120,3 +120,7 @@ new GitHubChangelogScraper({ stdTTL: 3600, checkperiod: 600 })
 2. **`src/index.ts`**: MCP tool implementations, server setup
 3. **`src/types.ts`**: Data structures (changes affect both files above)
 4. **Configuration files**: MCP client setup, deployment configs
+
+Copilot CLI agent documentation:
+https://github.com/github/copilot-cli
+https://docs.github.com/en/copilot/concepts/agents/about-copilot-cli
