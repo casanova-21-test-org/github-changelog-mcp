@@ -54,6 +54,10 @@ jobs:
                   "docker.io/library/github-changelog-mcp:latest"
                 ],
                 "env": {}
+              },
+              "github-remote-mcp": {
+                "type": "http",
+                "url": "https://api.githubcopilot.com/mcp/"
               }
             }
           }
