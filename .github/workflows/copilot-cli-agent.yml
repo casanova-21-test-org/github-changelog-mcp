@@ -35,10 +35,10 @@ jobs:
           echo "🔧 Setting up GitHub Changelog MCP Server for Copilot CLI..."
           
           # Create Copilot CLI config directory
-          mkdir -p ~/.config
+          mkdir -p /tmp/.copilot
           
           # Create MCP server configuration for Copilot CLI using Docker directly
-          cat > ~/.config/mcp-config.json << EOF
+          cat > /tmp/.copilot/mcp-config.json << EOF
           {
             "servers": {
               "github-changelog": {
@@ -61,6 +61,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
           GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
+          XDG_CONFIG_HOME: /tmp
         run: |
           echo "📅 Generating weekly Copilot changelog report and creating GitHub issue..."
           
