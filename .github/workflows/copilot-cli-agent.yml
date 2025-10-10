@@ -35,6 +35,8 @@ jobs:
           docker build -t github-changelog-mcp:latest .
 
       - name: Configure MCP servers for Copilot CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo "🔧 Setting up GitHub Changelog MCP Server for Copilot CLI..."
           
@@ -46,7 +48,7 @@ jobs:
           timeout 5s docker run --rm github-changelog-mcp:latest 2>&1 | grep -q "GitHub Changelog MCP Server running on stdio" && echo "✅ MCP Server Docker container can start successfully" || echo "⚠️ MCP Server Docker test inconclusive but proceeding"
           
           # Create MCP server configuration for Copilot CLI using Docker directly
-          cat > ~/.config/copilot/mcp.json << 'EOF'
+          cat > ~/.config/copilot/mcp.json << EOF
           {
             "servers": {
               "github-changelog": {
@@ -59,7 +61,7 @@ jobs:
                 "args": ["-y", "@modelcontextprotocol/server-github"],
                 "cwd": "/tmp",
                 "env": {
-                  "GITHUB_PERSONAL_ACCESS_TOKEN": "${{ secrets.GITHUB_TOKEN }}"
+                  "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
                 }
               }
             }
@@ -85,7 +87,16 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          echo "� Generating weekly Copilot changelog report and creating GitHub issue..."
+          echo "📅 Generating weekly Copilot changelog report and creating GitHub issue..."
+          
+          # Debug authentication
+          echo "🔍 Checking authentication setup:"
+          echo "GITHUB_TOKEN is set: $([ -n "$GITHUB_TOKEN" ] && echo "Yes" || echo "No")"
+          echo "GH_TOKEN is set: $([ -n "$GH_TOKEN" ] && echo "Yes" || echo "No")"
+          
+          # Verify Copilot CLI can authenticate
+          echo "🔐 Testing Copilot CLI authentication..."
+          copilot --version
           
           # Use Copilot CLI with explicit MCP server reference
           copilot -p "I need you to use two MCP servers that are configured: 'github-changelog' and 'github'. Please: 1) Use the github-changelog MCP server to get all Copilot-related changelog entries from this week, 2) Filter by COPILOT category, 3) Sort results by General Availability (🚢), Preview (👀), and Deprecated (⚓), 4) Add brief summaries under 40 words each with linkable URLs, 5) Generate a professional markdown report, 6) Use the 'github' MCP server to create a new issue in the repository '${{ github.repository }}' with the title 'Weekly Copilot Report - $(date +%Y-%m-%d)' and the formatted report as the issue body. Make it professional and well-formatted." --allow-all-tools
