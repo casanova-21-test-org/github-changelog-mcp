@@ -75,13 +75,15 @@ jobs:
             echo "⚠️ Token format may be incorrect (should start with ghp_ or ghs_)"
           fi
           
-          # First try: Use default GITHUB_TOKEN as fallback
-          echo "🔄 Trying with repository GITHUB_TOKEN as fallback..."
-          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          export GH_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          # Test API access with the PAT
+          echo "� Testing API access with your PAT..."
+          curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
+               -H "Accept: application/vnd.github.v3+json" \
+               https://api.github.com/user \
+               | jq -r '.login // "API call failed"' || echo "❌ API test failed"
           
           # Execute the Copilot CLI in programmatic mode with the provided prompt
-          echo "🚀 Executing Copilot CLI..."
+          echo "🚀 Executing Copilot CLI with your PAT..."
           copilot -p "${{ github.event.inputs.prompt }}" --allow-all-tools
           
           echo ""
