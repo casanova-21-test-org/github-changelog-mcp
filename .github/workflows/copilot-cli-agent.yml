@@ -31,6 +31,31 @@ jobs:
       - name: Build project
         run: npm run build
 
+      - name: Setup MCP Server for Copilot CLI
+        run: |
+          echo "🔧 Setting up GitHub Changelog MCP Server for Copilot CLI..."
+          
+          # Create Copilot CLI config directory
+          mkdir -p ~/.copilot
+          
+          # Create MCP server configuration for Copilot CLI
+          cat > ~/.copilot/config.json << 'EOF'
+          {
+            "mcp_servers": {
+              "github-changelog": {
+                "command": "node",
+                "args": ["dist/index.js"],
+                "cwd": "${{ github.workspace }}",
+                "description": "GitHub Changelog MCP Server - Access to GitHub changelog entries"
+              }
+            },
+            "trusted_folders": ["${{ github.workspace }}"]
+          }
+          EOF
+          
+          echo "✅ MCP Server configuration created"
+          cat ~/.copilot/config.json
+
       - name: Install GitHub Copilot CLI
         run: |
           npm install -g @github/copilot
@@ -53,7 +78,7 @@ jobs:
                https://api.github.com/orgs/${{ github.repository_owner }} \
                | jq '.plan.name // "Unknown plan"' || echo "Org info not accessible"
 
-      - name: Execute Copilot CLI Agent Hello World
+      - name: Execute Copilot CLI Agent with MCP Server
         env:
           GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
           GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
@@ -82,35 +107,47 @@ jobs:
                https://api.github.com/user \
                | jq -r '.login // "API call failed"' || echo "❌ API test failed"
           
-          # Execute the Copilot CLI in programmatic mode with the provided prompt
-          echo "🚀 Executing Copilot CLI with your PAT..."
-          copilot -p "${{ github.event.inputs.prompt }}" --allow-all-tools
+          # Test MCP server is working
+          echo "🧪 Testing MCP Server..."
+          timeout 10s node dist/index.js < /dev/null &
+          MCP_PID=$!
+          sleep 2
+          if kill -0 $MCP_PID 2>/dev/null; then
+            echo "✅ MCP Server is running (PID: $MCP_PID)"
+            kill $MCP_PID
+          else
+            echo "❌ MCP Server failed to start"
+          fi
+          
+          # Execute the Copilot CLI with MCP server integration
+          echo "🚀 Executing Copilot CLI with MCP Server access..."
+          copilot -p "Use the github-changelog MCP server to ${{ github.event.inputs.prompt }}. The server provides tools to get changelog entries, search them, and filter by categories like COPILOT." --allow-all-tools
           
           echo ""
           echo "✅ Copilot CLI Agent execution completed!"
 
-      - name: Test MCP Server Integration
+      - name: Get This Week's Copilot Changelog Entries
         env:
           GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
           GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
         run: |
-          echo "🧪 Testing MCP Server as context for Copilot..."
+          echo "📅 Getting this week's Copilot changelog entries using MCP Server..."
           
           # Run a quick test to ensure the MCP server is working
           npm run test
           
-          # Ask Copilot to explain the test results using programmatic mode
-          copilot -p "Explain what the npm run test output means for this TypeScript MCP server project and whether the tests passed successfully" --allow-all-tools
+          # Ask Copilot to get this week's Copilot entries using the MCP server
+          copilot -p "Use the github-changelog MCP server to get all Copilot-related changelog entries from this week (October 6-10, 2025). Filter by the COPILOT category and show the results sorted by General Availability, Preview, and Deprecated entries." --allow-tool 'github-changelog' --allow-all-tools
 
-      - name: Generate Project Summary
+      - name: Generate Weekly Copilot Report
         env:
           GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
           GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
         run: |
-          echo "📊 Generating project summary with Copilot CLI..."
+          echo "📊 Generating weekly Copilot report using MCP Server..."
           
-          # Use Copilot to analyze the project structure
-          copilot -p "Analyze the files in this GitHub Changelog MCP Server project and explain what each main component does. Focus on the src/ directory and key configuration files." --allow-all-tools
+          # Use Copilot to create a comprehensive weekly report
+          copilot -p "Use the github-changelog MCP server to create a comprehensive weekly Copilot report for October 6-10, 2025. Include: 1) All Copilot entries from this week, 2) Categorize them as GA (🚢), Preview (👀), or Deprecated (⚓), 3) Add brief summaries under 40 words each, 4) Format as a professional report with markdown. Use the MCP server's filtering and search capabilities." --allow-tool 'github-changelog' --allow-all-tools
           
           echo ""
-          echo "🎉 Workflow completed successfully!"
+          echo "🎉 Weekly Copilot report generated successfully!"
