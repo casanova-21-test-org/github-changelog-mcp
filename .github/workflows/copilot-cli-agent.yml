@@ -37,9 +37,9 @@ jobs:
 
       - name: Authenticate Copilot CLI
         run: |
-          # Set GitHub token for authentication
-          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
-          echo "GITHUB_TOKEN set for Copilot CLI authentication"
+          # Set GitHub token for authentication using Personal Access Token
+          export GITHUB_TOKEN="${{ secrets.COPILOT_TOKEN }}"
+          echo "GITHUB_TOKEN set for Copilot CLI authentication using PAT"
 
       - name: Execute Copilot CLI Agent Hello World
         run: |
@@ -48,7 +48,7 @@ jobs:
           echo ""
           
           # Execute the Copilot CLI in programmatic mode with the provided prompt
-          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          export GITHUB_TOKEN="${{ secrets.COPILOT_TOKEN }}"
           copilot -p "${{ github.event.inputs.prompt }}" --allow-all-tools
           
           echo ""
@@ -62,7 +62,7 @@ jobs:
           npm run test
           
           # Ask Copilot to explain the test results using programmatic mode
-          export GITHUB_TOKEN="${{ secrets.GITHUB_TOKEN }}"
+          export GITHUB_TOKEN="${{ secrets.COPILOT_TOKEN }}"
           copilot -p "Explain what the npm run test output means for this TypeScript MCP server project and whether the tests passed successfully" --allow-all-tools
 
       - name: Generate Project Summary
