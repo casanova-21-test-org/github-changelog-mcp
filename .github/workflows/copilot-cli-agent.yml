@@ -1,4 +1,4 @@
-name: Copilot CLI Agent Hello World
+name: Copilot CLI Agent Weekly Report
 
 on:
   workflow_dispatch:
@@ -10,10 +10,11 @@ on:
         type: string
 
 jobs:
-  copilot-cli-hello:
+  copilot-cli-weekly-report:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      issues: write
     
     steps:
       - name: Checkout repository
@@ -60,94 +61,15 @@ jobs:
         run: |
           npm install -g @github/copilot
 
-      - name: Check Copilot Access
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          echo "🔍 Checking Copilot access and permissions..."
-          
-          # Check if we can access GitHub API
-          curl -H "Authorization: Bearer $GITHUB_TOKEN" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/user \
-               | jq '.login // "No access"' || echo "API call failed"
-          
-          # Check if organization has Copilot enabled (this might fail but gives us info)
-          curl -H "Authorization: Bearer $GITHUB_TOKEN" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/orgs/${{ github.repository_owner }} \
-               | jq '.plan.name // "Unknown plan"' || echo "Org info not accessible"
-
-      - name: Execute Copilot CLI Agent with MCP Server
+      - name: Generate Weekly Copilot Report and Create Issue
         env:
           GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
           GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
         run: |
-          echo "🤖 Starting Copilot CLI Agent..."
-          echo "📝 Prompt: ${{ github.event.inputs.prompt }}"
-          echo ""
+          echo "📅 Generating weekly Copilot changelog report and creating GitHub issue..."
           
-          # Debug authentication
-          echo "🔑 Debugging authentication..."
-          echo "GITHUB_TOKEN length: ${#GITHUB_TOKEN}"
-          echo "GH_TOKEN length: ${#GH_TOKEN}"
-          echo "Token starts with: ${GITHUB_TOKEN:0:7}..."
-          
-          # Try to validate the token format
-          if [[ $GITHUB_TOKEN =~ ^gh[ps]_ ]]; then
-            echo "✅ Token appears to be a valid GitHub token format"
-          else
-            echo "⚠️ Token format may be incorrect (should start with ghp_ or ghs_)"
-          fi
-          
-          # Test API access with the PAT
-          echo "� Testing API access with your PAT..."
-          curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-               -H "Accept: application/vnd.github.v3+json" \
-               https://api.github.com/user \
-               | jq -r '.login // "API call failed"' || echo "❌ API test failed"
-          
-          # Test MCP server is working
-          echo "🧪 Testing MCP Server..."
-          timeout 10s node dist/index.js < /dev/null &
-          MCP_PID=$!
-          sleep 2
-          if kill -0 $MCP_PID 2>/dev/null; then
-            echo "✅ MCP Server is running (PID: $MCP_PID)"
-            kill $MCP_PID
-          else
-            echo "❌ MCP Server failed to start"
-          fi
-          
-          # Execute the Copilot CLI with MCP server integration
-          echo "🚀 Executing Copilot CLI with MCP Server access..."
-          copilot -p "Use the github-changelog MCP server to ${{ github.event.inputs.prompt }}. The server provides tools to get changelog entries, search them, and filter by categories like COPILOT." --allow-all-tools
+          # Use Copilot CLI with both MCP servers to get changelog entries and create an issue
+          copilot -p "Use the github-changelog MCP server AND the GitHub MCP server to: 1) Get all Copilot-related changelog entries from this week filtering by COPILOT category, 2) Sort results by General Availability (🚢), Preview (👀), and Deprecated (⚓), 3) Add brief summaries under 40 words each with linkable URLs, 4) Create a new GitHub issue in this repository titled 'Weekly Copilot Report - [Current Date]' with the formatted report as the issue body. Make the report well-formatted and professional." --allow-all-tools
           
           echo ""
-          echo "✅ Copilot CLI Agent execution completed!"
-
-      - name: Get This Week's Copilot Changelog Entries
-        env:
-          GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
-          GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
-        run: |
-          echo "📅 Getting this week's Copilot changelog entries using MCP Server..."
-          
-          # Run a quick test to ensure the MCP server is working
-          npm run test
-          
-          # Ask Copilot to get this week's Copilot entries using the MCP server
-          copilot -p "Use the github-changelog MCP server to get all Copilot-related changelog entries from this week (October 6-10, 2025). Filter by the COPILOT category and show the results sorted by General Availability, Preview, and Deprecated entries." --allow-tool 'github-changelog' --allow-all-tools
-
-      - name: Generate Weekly Copilot Report
-        env:
-          GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
-          GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
-        run: |
-          echo "📊 Generating weekly Copilot report using MCP Server..."
-          
-          # Use Copilot to create a comprehensive weekly report
-          copilot -p "Use the github-changelog MCP server to create a comprehensive weekly Copilot report for October 6-10, 2025. Include: 1) All Copilot entries from this week, 2) Categorize them as GA (🚢), Preview (👀), or Deprecated (⚓), 3) Add brief summaries under 40 words each, 4) Format as a professional report with markdown. Use the MCP server's filtering and search capabilities." --allow-tool 'github-changelog' --allow-all-tools
-          
-          echo ""
-          echo "🎉 Weekly Copilot report generated successfully!"
+          echo "✅ Weekly Copilot report generated and GitHub issue created successfully!"
