@@ -65,7 +65,7 @@ jobs:
           echo "📅 Generating weekly Copilot changelog report and creating GitHub issue..."
           
           # Use Copilot CLI with explicit MCP server reference
-          sh -xv copilot -p "Start up the changelog MCP server and use it to get all Copilot-related changelog entries from this week, 2) Filter by COPILOT category, 3) Sort results by General Availability (🚢), Preview (👀), and Deprecated (⚓), 4) Add brief summaries under 40 words each with linkable URLs, 5) Generate a professional markdown report, 6) Use the GitHub MCP server to create a new issue in the repository '${{ github.repository }}' with the title 'Weekly Copilot Report - $(date +%Y-%m-%d)' and the formatted report as the issue body. Make it professional and well-formatted." --allow-all-tools
+          copilot -p "Start up the changelog MCP server and use it to get all Copilot-related changelog entries from this week, 2) Filter by COPILOT category, 3) Sort results by General Availability (🚢), Preview (👀), and Deprecated (⚓), 4) Add brief summaries under 40 words each with linkable URLs, 5) Generate a professional markdown report, 6) Use the GitHub MCP server to create a new issue in the repository '${{ github.repository }}' with the title 'Weekly Copilot Report - $(date +%Y-%m-%d)' and the formatted report as the issue body. Make it professional and well-formatted." --allow-all-tools
           
           echo ""
           echo "✅ Weekly Copilot report generated and GitHub issue created successfully!"
