@@ -2,12 +2,6 @@ name: Copilot CLI Agent Weekly Report
 
 on:
   workflow_dispatch:
-    inputs:
-      prompt:
-        description: 'Custom prompt to send to Copilot CLI agent'
-        required: false
-        default: 'Hello world! Please analyze this GitHub Changelog MCP Server project and provide a brief summary of its purpose and architecture.'
-        type: string
 
 jobs:
   copilot-cli-weekly-report:
@@ -36,7 +30,7 @@ jobs:
 
       - name: Configure MCP servers for Copilot CLI
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
         run: |
           echo "🔧 Setting up GitHub Changelog MCP Server for Copilot CLI..."
           
@@ -69,8 +63,8 @@ jobs:
 
       - name: Generate Weekly Copilot Report and Create Issue
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
+          GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
         run: |
           echo "📅 Generating weekly Copilot changelog report and creating GitHub issue..."
           
