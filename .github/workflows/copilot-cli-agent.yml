@@ -75,7 +75,7 @@ jobs:
           echo "📅 Generating weekly Copilot changelog report and creating GitHub issue..."
           
           # Use Copilot CLI with explicit MCP server reference
-          copilot -p "fetch the latest changelog entries" --allow-all-tools --log-dir /tmp/logs --log-level debu
+          copilot -p "fetch the latest changelog entries" --allow-all-tools --log-dir /tmp/logs --log-level debug
           
           echo ""
           echo "✅ Weekly Copilot report generated and GitHub issue created successfully!"
