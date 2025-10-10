@@ -60,7 +60,7 @@ jobs:
           EOF
           
           echo "✅ MCP Server Docker configuration created"
-          cat ~/.config/mcp-config.json
+          cat /tmp/.copilot/mcp-config.json
 
       - name: Install GitHub Copilot CLI
         run: |
