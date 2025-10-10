@@ -51,7 +51,7 @@ jobs:
                   "run",
                   "--rm",
                   "-i",
-                  "local/github-changelog-mcp:latest"
+                  "docker.io/library/github-changelog-mcp:latest"
                 ],
                 "env": {}
               }
