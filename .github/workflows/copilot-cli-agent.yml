@@ -35,14 +35,10 @@ jobs:
           echo "🔧 Setting up GitHub Changelog MCP Server for Copilot CLI..."
           
           # Create Copilot CLI config directory
-          mkdir -p ~/.config/copilot
-          
-          # Test that the MCP server Docker container works first
-          echo "🧪 Testing MCP server Docker container startup..."
-          timeout 5s docker run --rm github-changelog-mcp:latest 2>&1 | grep -q "GitHub Changelog MCP Server running on stdio" && echo "✅ MCP Server Docker container can start successfully" || echo "⚠️ MCP Server Docker test inconclusive but proceeding"
+          mkdir -p ~/.copilot
           
           # Create MCP server configuration for Copilot CLI using Docker directly
-          cat > ~/.config/copilot/mcp.json << EOF
+          cat > ~/.copilot/mcp-config.json << EOF
           {
             "servers": {
               "github-changelog": {
@@ -55,7 +51,7 @@ jobs:
           EOF
           
           echo "✅ MCP Server Docker configuration created"
-          cat ~/.config/copilot/mcp.json
+          cat ~/.copilot/mcp-config.json
 
       - name: Install GitHub Copilot CLI
         run: |
