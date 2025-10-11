@@ -2,6 +2,8 @@ name: Copilot CLI Agent Weekly Report
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: '0 22 * * 5'  # Every Friday at 10 PM UTC (6 PM EST / 7 PM EDT)
 
 jobs:
   copilot-cli-weekly-report:
@@ -84,4 +86,3 @@ jobs:
           copilot -p "Give me the last two weeks' Copilot changelog entries and ensure any links provided in the changelog are included and provide a 10-15 word summary for each entry. Group them by Generally Available vs Preview. Do not group and list them by date. Create an Issue out of them" --allow-all-tools --log-dir /tmp/logs --log-level debug
           echo ""
           echo "✅ Weekly Copilot report generated and GitHub issue created successfully!"
-          cat /tmp/logs/session*.log
