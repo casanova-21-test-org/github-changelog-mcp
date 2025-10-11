@@ -41,19 +41,25 @@ jobs:
           cat > /tmp/.copilot/mcp-config.json << EOF
           {
             "mcpServers": {
-              "changelog": {
+              "changelog-mcp": {
                 "type": "local",
                 "command": "docker",
-                "tools": [
-                  "*"
-                ],
-                "args": [
-                  "run",
-                  "--rm",
-                  "-i",
-                  "docker.io/library/github-changelog-mcp:latest"
-                ],
-                "env": {}
+                "tools": ["*"],
+                "args": ["run", "--rm", "-i", "github-changelog-mcp:latest"]
+              },
+              "playwright": {
+                "type": "local",
+                "command": "npx",
+                "args": ["@playwright/mcp@latest"],
+                "tools": ["browser", "page", "locator"]
+              },
+              "github": {
+                "type": "http",
+                "url": "https://api.githubcopilot.com/mcp/",
+                "headers": {
+                  "Authorization": "Bearer ${GITHUB_TOKEN}"
+                },
+                "tools": ["*"]
               }
             }
           }
