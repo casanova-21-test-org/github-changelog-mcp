@@ -1,0 +1,88 @@
+name: GitHub Changelog Copilot Weekly Report
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 22 * * 5'  # Every Friday at 10 PM UTC (6 PM EST / 7 PM EDT)
+
+jobs:
+  copilot-cli-weekly-report:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --prefer-offline --no-audit --no-fund
+
+      - name: Build Docker Image for MCP Server
+        run: |
+          echo "🐳 Building GitHub Changelog MCP Server Docker image..."
+          docker build -t github-changelog-mcp:latest .
+
+      - name: Configure MCP servers for Copilot CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
+        run: |
+          echo "🔧 Setting up GitHub Changelog MCP Server for Copilot CLI..."
+          
+          # Create Copilot CLI config directory
+          mkdir -p /tmp/.copilot
+          
+          # Create MCP server configuration for Copilot CLI using Docker directly
+          cat > /tmp/.copilot/mcp-config.json << EOF
+          {
+            "mcpServers": {
+              "changelog-mcp": {
+                "type": "local",
+                "command": "docker",
+                "tools": ["*"],
+                "args": ["run", "--rm", "-i", "github-changelog-mcp:latest"]
+              },
+              "playwright": {
+                "type": "local",
+                "command": "npx",
+                "args": ["@playwright/mcp@latest"],
+                "tools": ["browser", "page", "locator"]
+              },
+              "github": {
+                "type": "http",
+                "url": "https://api.githubcopilot.com/mcp/",
+                "headers": {
+                  "Authorization": "Bearer ${GITHUB_TOKEN}"
+                },
+                "tools": ["*"]
+              }
+            }
+          }
+          EOF
+          
+          echo "✅ MCP Server Docker configuration created"
+          cat /tmp/.copilot/mcp-config.json
+
+      - name: Install GitHub Copilot CLI
+        run: |
+          npm install -g @github/copilot
+
+      - name: Generate Weekly Copilot Report and Create Issue
+        env:
+          GITHUB_TOKEN: ${{ secrets.COPILOT_TOKEN }}
+          GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
+          XDG_CONFIG_HOME: /tmp
+        run: |
+          echo "📅 Generating weekly Copilot changelog report and creating GitHub issue..."
+          
+          # Use Copilot CLI with explicit MCP server reference
+          copilot -p "Give me the last two weeks' Copilot changelog entries and ensure any links provided in the changelog are included and provide a 10-15 word summary for each entry. Group them by Generally Available vs Preview. Do not group and list them by date. Create an Issue out of them" --allow-all-tools --log-dir /tmp/logs --log-level debug
+          echo ""
+          echo "✅ Weekly Copilot report generated and GitHub issue created successfully!"

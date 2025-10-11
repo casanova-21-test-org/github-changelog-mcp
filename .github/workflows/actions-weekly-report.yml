@@ -1,4 +1,4 @@
-name: GitHub Changelog Weekly Report
+name: GitHub Changelog Actions Weekly Report
 
 on:
   workflow_dispatch:
@@ -80,9 +80,9 @@ jobs:
           GH_TOKEN: ${{ secrets.COPILOT_TOKEN }}
           XDG_CONFIG_HOME: /tmp
         run: |
-          echo "📅 Generating weekly Copilot changelog report and creating GitHub issue..."
+          echo "📅 Generating weekly Actions changelog report and creating GitHub issue..."
           
           # Use Copilot CLI with explicit MCP server reference
-          copilot -p "Give me the last two weeks' Copilot changelog entries and ensure any links provided in the changelog are included and provide a 10-15 word summary for each entry. Group them by Generally Available vs Preview. Do not group and list them by date. Create an Issue out of them" --allow-all-tools --log-dir /tmp/logs --log-level debug
+          copilot -p "Give me the last two weeks' Actions changelog entries and ensure any links provided in the changelog are included and provide a 10-15 word summary for each entry. Group them by Generally Available vs Preview. Do not group and list them by date. Create an Issue out of them" --allow-all-tools --log-dir /tmp/logs --log-level debug
           echo ""
-          echo "✅ Weekly Copilot report generated and GitHub issue created successfully!"
+          echo "✅ Weekly Actions report generated and GitHub issue created successfully!"
