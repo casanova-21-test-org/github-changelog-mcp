@@ -106,6 +106,60 @@ new GitHubChangelogScraper({ stdTTL: 3600, checkperiod: 600 })
 - Smoke test verifies container startup message
 - Auto-publishes to GHCR on main branch pushes
 
+## Weekly Report Generation Guidelines
+
+### Feature Availability Classification
+When generating weekly Copilot changelog reports and creating GitHub issues, follow these **critical classification rules**:
+
+#### **Generally Available (GA) 🚢**
+- Features must be **explicitly stated** as "generally available" in the changelog entry
+- Look for exact phrases: "generally available", "GA", "now available to all users"
+- **DO NOT** assume a feature is GA just because it's "available" or "released"
+- Example: "GitHub Copilot Chat is now generally available" → GA section
+- Example: "New feature available in beta" → Preview section (NOT GA)
+
+#### **Preview/Beta 👀**
+- Features marked as: "beta", "preview", "limited availability", "early access"
+- Features that are "available" but without explicit GA designation
+- Features being "rolled out" or "coming soon"
+- Example: "Copilot in IDE now available in preview" → Preview section
+
+##### **Preview Type Classification (Required Sub-notes)**
+For each preview feature, **always include a sub-note** indicating the preview type:
+- **Private Preview** 🔒: Limited to invited users, closed access, application required
+  - Look for: "private preview", "invite-only", "limited access", "by invitation"
+  - Sub-note format: `*(Private Preview - Invite Only)*`
+- **Public Preview** 🌐: Open to all users, opt-in available, public access
+  - Look for: "public preview", "opt-in", "available to all users in preview"
+  - Sub-note format: `*(Public Preview - Opt-in Available)*`
+- **Unclear Preview Type** ❓: When preview type is not explicitly stated
+  - Sub-note format: `*(Preview Type Not Specified)*`
+
+#### **Deprecated/Retired ⚓**
+- Features being sunset, discontinued, or replaced
+- Look for: "deprecated", "retiring", "no longer supported", "end of life"
+
+### **Report Structure Requirements**
+- Group entries by availability status, NOT by date
+- Include direct links to changelog entries
+- Provide 10-15 word summaries for each entry
+- Use clear section headers with emojis
+- Focus on last two weeks of entries
+- **For Preview features**: Always include preview type sub-notes (Private/Public/Unclear)
+
+### **Example Preview Section Format**
+```markdown
+## Preview/Beta 👀
+
+### Feature Name
+Brief 10-15 word description with [changelog link](url)
+*(Private Preview - Invite Only)*
+
+### Another Feature
+Brief 10-15 word description with [changelog link](url)
+*(Public Preview - Opt-in Available)*
+```
+
 ## Common Pitfalls & Solutions
 
 1. **Build Required**: Server won't start without `npm run build` first
@@ -113,6 +167,8 @@ new GitHubChangelogScraper({ stdTTL: 3600, checkperiod: 600 })
 3. **stdio Transport**: Server logs to stderr, data to stdout (don't mix streams)
 4. **Year Boundary**: Scraper fetches current + previous year automatically
 5. **Category Matching**: Case-insensitive filtering, but categories stored as-scraped
+6. **GA Classification Error**: Don't conflate "available" with "generally available" - requires explicit GA statement
+7. **Missing Preview Type**: Always include preview type sub-notes for Preview features (Private/Public/Unclear)
 
 ## File Priority for Changes
 

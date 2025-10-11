@@ -1,4 +1,4 @@
-name: Copilot CLI Agent Weekly Report
+name: GitHub Changelog Weekly Report
 
 on:
   workflow_dispatch:
