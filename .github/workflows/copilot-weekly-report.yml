@@ -1,4 +1,4 @@
-name: GitHub Changelog Copilot Weekly Report
+name: Changelog Copilot Weekly Report
 
 on:
   workflow_dispatch:
