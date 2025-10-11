@@ -143,21 +143,32 @@ For each preview feature, **always include a sub-note** indicating the preview t
 - Group entries by availability status, NOT by date
 - Include direct links to changelog entries
 - Provide 10-15 word summaries for each entry
+- **Include the date for each entry** (format: YYYY-MM-DD or readable format)
 - Use clear section headers with emojis
 - Focus on last two weeks of entries
 - **For Preview features**: Always include preview type sub-notes (Private/Public/Unclear)
 
-### **Example Preview Section Format**
+### **Example Report Format with Dates**
 ```markdown
+## Generally Available 🚢
+
+### Feature Name (2024-10-08)
+Brief 10-15 word description with [changelog link](url)
+
 ## Preview/Beta 👀
 
-### Feature Name
+### Feature Name (2024-10-07)
 Brief 10-15 word description with [changelog link](url)
 *(Private Preview - Invite Only)*
 
-### Another Feature
+### Another Feature (2024-10-09)
 Brief 10-15 word description with [changelog link](url)
 *(Public Preview - Opt-in Available)*
+
+## Deprecated/Retired ⚓
+
+### Legacy Feature (2024-10-06)
+Brief 10-15 word description with [changelog link](url)
 ```
 
 ## Common Pitfalls & Solutions
@@ -169,6 +180,7 @@ Brief 10-15 word description with [changelog link](url)
 5. **Category Matching**: Case-insensitive filtering, but categories stored as-scraped
 6. **GA Classification Error**: Don't conflate "available" with "generally available" - requires explicit GA statement
 7. **Missing Preview Type**: Always include preview type sub-notes for Preview features (Private/Public/Unclear)
+8. **Missing Dates**: Always include the date for each changelog entry in the report
 
 ## File Priority for Changes
 
