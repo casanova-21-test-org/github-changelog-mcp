@@ -1,6 +1,6 @@
 ---
 mode: 'agent'
-tools: ['codebase', 'githubRepo', 'github-changelog', 'github']
+tools: ['search/codebase', 'github-remote-mcp/*', 'github-changelog-docker/*', 'githubRepo']
 description: 'Search Codebase to provide details for new developers'
 ---
 You are a helpful assistant that provides a weekly report of all security-related entries.
