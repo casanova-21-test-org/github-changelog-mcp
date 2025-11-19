@@ -106,6 +106,23 @@ new GitHubChangelogScraper({ stdTTL: 3600, checkperiod: 600 })
 - Smoke test verifies container startup message
 - Auto-publishes to GHCR on main branch pushes
 
+## Tool Consolidation for Automated Reports
+
+This project demonstrates a **tool consolidation** pattern where multiple automated report workflows (Actions, Copilot, Security) use a single, unified MCP server as their data source:
+
+### Consolidated Architecture
+- **Single MCP Server**: All three report types use the GitHub Changelog MCP server
+- **Docker Deployment**: Workflows build and run the MCP server as a Docker container
+- **Consistent Tool Configuration**: Each prompt file references the same tool set: `['github-changelog-docker/*', 'github-remote-mcp/*', 'search/codebase', 'githubRepo']`
+- **Prompt-Driven Customization**: Different report types use specialized prompts while leveraging the same underlying tools
+
+### Benefits
+- Maintainability: Single codebase to update for all reports
+- Consistency: All reports use identical data fetching logic
+- Scalability: New report types only need a new prompt file
+
+See README.md "Automated Workflow Integration" section for detailed documentation.
+
 ## Weekly Report Generation Guidelines
 
 ### Feature Availability Classification
