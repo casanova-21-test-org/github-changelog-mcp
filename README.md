@@ -247,6 +247,67 @@ The server provides comprehensive error handling:
 }
 ```
 
+## Automated Workflow Integration
+
+This project includes automated weekly report generation workflows that demonstrate the **tool consolidation** approach - using a single, unified MCP server to fetch changelog data for multiple report types.
+
+### Tool Consolidation Architecture
+
+Instead of having separate data fetching mechanisms for different report types, all three automated workflows use the **GitHub Changelog MCP server** as the single source of truth for changelog data:
+
+- **Actions Weekly Report** (`.github/workflows/actions-weekly-report.yml`)
+- **Copilot Weekly Report** (`.github/workflows/copilot-weekly-report.yml`)
+- **Security Weekly Report** (`.github/workflows/security-weekly-report.yml`)
+
+### How It Works
+
+1. **Unified MCP Server Deployment**: Each workflow builds the GitHub Changelog MCP server Docker image and configures it as a local MCP server for the GitHub Copilot CLI.
+
+2. **Consistent Tool Configuration**: All three prompt files (`.github/prompts/*.prompt.md`) reference the same tool set:
+   ```yaml
+   tools: ['github-changelog-docker/*', 'github-remote-mcp/*', 'search/codebase', 'githubRepo']
+   ```
+
+3. **Docker-Based MCP Server**: The workflows use Docker to run the MCP server, ensuring consistent behavior across all report types:
+   ```json
+   {
+     "mcpServers": {
+       "changelog-mcp": {
+         "type": "local",
+         "command": "docker",
+         "args": ["run", "--rm", "-i", "github-changelog-mcp:latest"]
+       }
+     }
+   }
+   ```
+
+4. **Prompt-Driven Reports**: Each report type uses a specialized prompt file that leverages the same underlying MCP tools:
+   - `actions-report.prompt.md` - Filters for Actions category
+   - `copilot-report.prompt.md` - Filters for Copilot category
+   - `security-report.prompt.md` - Filters for security-related categories
+
+### Benefits of Tool Consolidation
+
+✅ **Single Source of Truth**: All reports fetch data from the same MCP server, ensuring consistency
+
+✅ **Maintainability**: Updates to changelog fetching logic only need to be made in one place
+
+✅ **Standardization**: Common tool interface across all report types reduces complexity
+
+✅ **Scalability**: Easy to add new report types by creating additional prompt files
+
+✅ **Testing**: One MCP server implementation to test and validate
+
+### Adding New Report Types
+
+To create a new automated report:
+
+1. Create a new prompt file in `.github/prompts/` (e.g., `platform-report.prompt.md`)
+2. Configure the same tool set: `['github-changelog-docker/*', 'github-remote-mcp/*', ...]`
+3. Customize the prompt to filter for your desired category
+4. Create a workflow file that follows the same pattern as existing report workflows
+5. The MCP server automatically handles the data fetching using its built-in tools
+
 ## Contributing
 
 1. Fork the repository
